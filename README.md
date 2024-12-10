@@ -10,6 +10,8 @@ npx cap open android
 
 BROWSER
 
-npm install -g live-server
+npm install
 
-live-server public      
+npm run dev (required node 18 - nvm use)
+
+npm run lint--fix (eslint)

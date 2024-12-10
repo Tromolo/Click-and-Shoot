@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "esnext",
+    "rootDir": "public/src",          // Zdrojové súbory v src/
+    "moduleResolution": "node",
+    "baseUrl": "./",             // Základná cesta pre moduly
+    "outDir": "./public/dist",   // Preložené súbory pôjdu do public/dist
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": ["public/src/**/*.ts"],    // Zahrňte všetky TypeScript súbory v src/
+  "exclude": ["node_modules"]    // Vylúčte node_modules
+}
