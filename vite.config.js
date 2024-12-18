@@ -3,8 +3,9 @@ import copy from 'rollup-plugin-copy';
 
 export default defineConfig({
     base: './',
+    root: 'public',
     build: {
-        outDir: 'dist', // Výstupný priečinok (relatívne k 'public')
+        outDir: '../dist', // Výstupný priečinok (relatívne k 'public')
         emptyOutDir: true, // Vymaže predchádzajúci build
     },
     server: {
