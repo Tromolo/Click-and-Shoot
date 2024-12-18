@@ -1,4 +1,4 @@
-import { isOverlapping, clearActiveTargets, getRandomTargedId } from './helpers';
+import {clearActiveTargets, getRandomTargedId, findFreeRandomPosition } from './helpers';
 import { gameOver } from './gameOver';
 
 export function spawnTargets(scene: Phaser.Scene): void {
@@ -9,22 +9,16 @@ export function spawnTargets(scene: Phaser.Scene): void {
 }
 
 function spawnTarget(scene: Phaser.Scene, texture: string): void {
-    const maxAttempts = 20;
-    const size = 120;
-    let attempts = 0;
-    let x: number, y: number;
+    const minDistance = 100;
+    const freePosition = findFreeRandomPosition(scene, minDistance);
 
-    const activeTargets = scene.data.get('activeTargets') as Phaser.GameObjects.Sprite[];
+    if (!freePosition) return;
 
-    do {
-        x = Phaser.Math.Between(50, window.innerWidth - 50);
-        y = Phaser.Math.Between(100, window.innerHeight - 100);
-        attempts++;
-    } while (isOverlapping(x, y, size, activeTargets) && attempts < maxAttempts);
-
-    const target = scene.physics.add.sprite(x, y, texture);
+    const target = scene.physics.add.sprite(freePosition.x, freePosition.y, texture);
     target.setInteractive();
     target.setDisplaySize(100, 100);
+
+    const activeTargets = scene.data.get('activeTargets') as Phaser.GameObjects.Sprite[];
     activeTargets.push(target);
 
     target.on('pointerdown', () => {
@@ -39,7 +33,8 @@ function spawnTarget(scene: Phaser.Scene, texture: string): void {
             const updatedScore = scene.data.get('score') as number + 1;
             scene.data.set('score', updatedScore);
             scoreText.setText('Score: ' + updatedScore);
-
+            
+            removeTargetFromActiveTargets(target, activeTargets, scene)
             target.destroy();
         } else {
             clearActiveTargets(scene);
@@ -51,7 +46,22 @@ function spawnTarget(scene: Phaser.Scene, texture: string): void {
         delay: 3000,
         callback: () => {
             if (!target.scene) return;
+            removeTargetFromActiveTargets(target, activeTargets, scene)
+
             target.destroy();
         }
     });
+}
+
+function removeTargetFromActiveTargets(
+    target: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody, 
+    activeTargets: Phaser.GameObjects.Sprite[], 
+    scene: Phaser.Scene
+) {
+    const index = activeTargets.indexOf(target);
+
+    if (index > -1) {
+        activeTargets.splice(index, 1);
+        scene.data.set('activeTargets', activeTargets);
+    }
 }

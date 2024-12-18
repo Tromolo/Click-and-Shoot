@@ -36,3 +36,10 @@ export const config: Phaser.Types.Core.GameConfig = {
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
 };
+
+export const playableZone = {
+  xMin: 50,
+  xMax: window.innerWidth - 50,
+  yMin: 150,
+  yMax: window.innerHeight - 50
+};

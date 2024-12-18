@@ -1,3 +1,4 @@
+import { playableZone } from "../config";
 import { gameOver } from "./gameOver";
 
 export function resetSpawnTimer(scene: Phaser.Scene): void {
@@ -33,15 +34,40 @@ export function clearActiveTargets(scene: Phaser.Scene): void {
     scene.data.set('activeTargets', []);
 }
 
-export function isOverlapping(
+export function findFreeRandomPosition(
+    scene: Phaser.Scene,
+    minDistance: number,
+    maxAttempts: number = 50
+): { x: number, y: number } | null {
+    const activeTargets = scene.data.get('activeTargets') as Phaser.GameObjects.Sprite[];
+
+    let attempts = 0;
+    let x: number, y: number;
+
+    do {
+        x = Phaser.Math.Between(playableZone.xMin, playableZone.xMax);
+        y = Phaser.Math.Between(playableZone.yMin, playableZone.yMax);
+
+        attempts++;
+
+        if (attempts >= maxAttempts) {
+            console.warn('Nepodarilo sa nájsť voľnú pozíciu po maximálnom počte pokusov.');
+            return null;
+        }
+    } while (isOverlapping(x, y, minDistance, activeTargets));
+
+    return { x, y };
+}
+
+function isOverlapping(
     newX: number,
     newY: number,
-    size: number,
+    minDistance: number,
     targets: Phaser.GameObjects.Sprite[]
 ): boolean {
     return targets.some(target => {
         const distance = Phaser.Math.Distance.Between(newX, newY, target.x, target.y);
-        return distance < size;
+        return distance < minDistance;
     });
 }
 
