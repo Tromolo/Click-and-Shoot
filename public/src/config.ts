@@ -25,6 +25,7 @@ export const config: Phaser.Types.Core.GameConfig = {
       globalData.set("activeTargets", []);
       globalData.set("spawnTimer", null);
       globalData.set("isPaused", false);
+      globalData.set("changeTargetTimer", null);
 
       create.call(this);
     },

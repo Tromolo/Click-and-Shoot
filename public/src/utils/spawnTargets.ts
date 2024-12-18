@@ -1,19 +1,14 @@
-import { isOverlapping, clearActiveTargets } from './helpers';
+import { isOverlapping, clearActiveTargets, getRandomTargedId } from './helpers';
 import { gameOver } from './gameOver';
 
 export function spawnTargets(scene: Phaser.Scene): void {
     if (scene.data.get('isGameOver')) return;
 
-    const correctTargetID = scene.data.get('correctTargetID');
-    spawnTarget(scene, `target${correctTargetID}`, true);
-
-    const wrongTargetID = Phaser.Math.Between(1, 4);
-    if (wrongTargetID !== correctTargetID) {
-        spawnTarget(scene, `target${wrongTargetID}`, false);
-    }
+    const targetId = getRandomTargedId();
+    spawnTarget(scene, `target${targetId}`);
 }
 
-function spawnTarget(scene: Phaser.Scene, texture: string, isCorrect: boolean): void {
+function spawnTarget(scene: Phaser.Scene, texture: string): void {
     const maxAttempts = 20;
     const size = 120;
     let attempts = 0;
@@ -32,21 +27,25 @@ function spawnTarget(scene: Phaser.Scene, texture: string, isCorrect: boolean): 
     target.setDisplaySize(100, 100);
     activeTargets.push(target);
 
-    if (isCorrect) {
-        target.on('pointerdown', () => {
+    target.on('pointerdown', () => {
+        const correctTargetID = scene.data.get('correctTargetID');
+        const isCurrentlyCorrect = texture === `target${correctTargetID}`;
+
+        console.log("isCurrentlyCorrect", isCurrentlyCorrect)
+        console.log(texture, "=", `target${correctTargetID}`)
+
+        if (isCurrentlyCorrect) {
             const scoreText = scene.data.get('scoreText');
-            const updatedScore = scene.data.get('score') as number + 1;        
+            const updatedScore = scene.data.get('score') as number + 1;
             scene.data.set('score', updatedScore);
             scoreText.setText('Score: ' + updatedScore);
 
             target.destroy();
-        });
-    } else {
-        target.on('pointerdown', () => {
+        } else {
             clearActiveTargets(scene);
             gameOver(scene);
-        });
-    }
+        }
+    });
 
     scene.time.addEvent({
         delay: 3000,

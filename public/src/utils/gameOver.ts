@@ -7,6 +7,7 @@ export function gameOver(scene: Phaser.Scene): void {
     scene.data.set('isGameOver', true);
 
     // Vymazanie všetkých časovačov a aktívnych cieľov
+    scene.data.get('changeTargetTimer').destroy();
     scene.time.clearPendingEvents();
     resetSpawnTimer(scene);
     clearActiveTargets(scene);
